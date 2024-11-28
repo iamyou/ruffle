@@ -113,16 +113,11 @@ jobs:
           mkdir package
           cp README.md package/README.md
           cp LICENSE.md package/LICENSE.md
-          
-      - name: Debugging with tmate
-        uses: mxschmitt/action-tmate@v3.19
 
-      - name: Upload macOS build artifact
-        if: runner.os == 'macOS'
+      - name: Upload exporter
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.build_name }}
           path: |
-            ${{ env.CARGO_BUILD_DIR }}/ruffle_desktop
-            ${{ env.CARGO_BUILD_DIR }}/ruffle_web_safari
+            ${{ env.CARGO_BUILD_DIR }}/exporter
             package
