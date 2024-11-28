@@ -113,43 +113,6 @@ jobs:
           mkdir package
           cp README.md package/README.md
           cp LICENSE.md package/LICENSE.md
-
-      - name: Package MSI
-        run: |
-          cd desktop/packages/windows/wix
-          wix build ruffle.wxs -ext WixToolset.UI.wixext -ext WixToolset.Util.wixext -arch ${{ matrix.MSI_ARCH }} -o ../../../../package/setup.msi -pdbtype none
-        env:
-          RUFFLE_VERSION: "0.1.0"
-          CARGO_BUILD_DIR: ../../../../target/${{ matrix.target }}/release
-        if: runner.os == 'Windows'
-
-      - name: Package Windows
-        if: runner.os == 'Windows'
-        run: |
-          cp ${{ env.CARGO_BUILD_DIR }}/ruffle_desktop.exe package/ruffle.exe
-          7z a ${{ env.PACKAGE_FILE }} ./package/*
-
-      - name: Package Linux
-        if: runner.os == 'Linux'
-        run: |
-          cp ${{ env.CARGO_BUILD_DIR }}/ruffle_desktop package/ruffle
-
-          # Package extras
-          mkdir -p package/extras
-          cp desktop/packages/linux/rs.ruffle.Ruffle.desktop package/extras
-          cp desktop/packages/linux/rs.ruffle.Ruffle.metainfo.xml package/extras
-          cp desktop/packages/linux/rs.ruffle.Ruffle.svg package/extras
-
-          # We must enter the package/ directory in order to create a flat tarball (i.e. without a directory in it).
-          cd package
-          tar -czvf ../${{ env.PACKAGE_FILE }} *
-      
-
-      - name: Upload package
-        if: runner.os != 'macOS'
-        run: gh release upload "${{ needs.create-nightly-release.outputs.tag_name }}" "${{ env.PACKAGE_FILE }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Debugging with tmate
         uses: mxschmitt/action-tmate@v3.19
